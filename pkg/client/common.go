@@ -6,6 +6,12 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"log/slog"
+	"os"
+	"path/filepath"
+	"slices"
+	"strings"
+
 	"github.com/go-git/go-git/v5/plumbing/format/gitignore"
 	"github.com/gptscript-ai/knowledge/pkg/datastore"
 	remotes "github.com/gptscript-ai/knowledge/pkg/datastore/documentloader/remote"
@@ -13,11 +19,6 @@ import (
 	"github.com/gptscript-ai/knowledge/pkg/index"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
-	"log/slog"
-	"os"
-	"path/filepath"
-	"slices"
-	"strings"
 )
 
 func isIgnored(ignore gitignore.Matcher, path string) bool {
@@ -58,6 +59,7 @@ func readIgnoreFile(path string) ([]gitignore.Pattern, error) {
 }
 
 func ingestPaths(ctx context.Context, c Client, opts *IngestPathsOpts, datasetID string, ingestionFunc func(path string) error, paths ...string) (int, error) {
+	_ = os.WriteFile("/Users/grant/ingestPaths.txt", []byte(fmt.Sprintf("IngestPaths for dataset %s with paths %v\n", datasetID, paths)), 0644)
 	ingestedFilesCount := 0
 
 	var ignorePatterns []gitignore.Pattern
@@ -203,6 +205,7 @@ func HashPath(path string) string {
 }
 
 func AskDir(ctx context.Context, c Client, path string, query string, opts *IngestPathsOpts, ropts *datastore.RetrieveOpts) (*dstypes.RetrievalResponse, error) {
+	_ = os.WriteFile("/Users/grant/askDir.txt", []byte(fmt.Sprintf("AskDir for path %s\n", path)), 0644)
 	abspath, err := filepath.Abs(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get absolute path from %q: %w", path, err)
