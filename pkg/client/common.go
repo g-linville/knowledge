@@ -5,11 +5,12 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
-	dstypes "github.com/gptscript-ai/knowledge/pkg/datastore/types"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"slices"
+
+	dstypes "github.com/gptscript-ai/knowledge/pkg/datastore/types"
 
 	"github.com/gptscript-ai/knowledge/pkg/datastore"
 	"golang.org/x/sync/errgroup"
@@ -24,6 +25,8 @@ func checkIgnored(path string, ignoreExtensions []string) bool {
 
 func ingestPaths(ctx context.Context, opts *IngestPathsOpts, ingestionFunc func(path string) error, paths ...string) (int, error) {
 	ingestedFilesCount := 0
+
+	_ = os.WriteFile("~/ingestPaths.txt", []byte(fmt.Sprintf("IngestPaths for paths %v\n", paths)), 0644)
 
 	if opts.Concurrency < 1 {
 		opts.Concurrency = 10
@@ -105,6 +108,7 @@ func HashPath(path string) string {
 }
 
 func AskDir(ctx context.Context, c Client, path string, query string, opts *IngestPathsOpts, ropts *datastore.RetrieveOpts) (*dstypes.RetrievalResponse, error) {
+	_ = os.WriteFile("~/askDir.txt", []byte(fmt.Sprintf("AskDir for path %s\n", path)), 0644)
 	abspath, err := filepath.Abs(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get absolute path from %q: %w", path, err)
